@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tictactoe-service
+  namespace: tictactoe
   labels:
     app: tictactoe
 spec:
