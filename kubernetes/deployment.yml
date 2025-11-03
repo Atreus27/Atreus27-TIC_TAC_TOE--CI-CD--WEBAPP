@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tictactoe-deployment
+  labels:
+    app: tictactoe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tictactoe
+  template:
+    metadata:
+      labels:
+        app: tictactoe
+    spec:
+      imagePullSecrets:
+        - name: ecr-registry-secret
+      containers:
+        - name: tictactoe
+          image: 959975882219.dkr.ecr.us-east-1.amazonaws.com/tic_tac_toe:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5050
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5050
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5050
+            initialDelaySeconds: 15
+            periodSeconds: 20
