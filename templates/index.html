@@ -1,0 +1,127 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TicTacToe — CI/CD Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TicTacToe</h1>
+      <div class="players">
+        <input id="playerX" placeholder="Player X name" value="Alice">
+        <input id="playerO" placeholder="Player O name" value="Bob">
+      </div>
+      <button id="restartBtn">New Game</button>
+    </header>
+
+    <main>
+      <section class="board" id="board">
+        <!-- 9 cells -->
+      </section>
+
+      <aside class="side">
+        <div class="card">
+          <h3>Scoreboard</h3>
+          <p id="scoreboard">Wins: —</p>
+        </div>
+
+        <div class="card">
+          <h3>Leaderboard</h3>
+          <ol id="leaderboard"></ol>
+        </div>
+
+        <div class="card">
+          <h3>History</h3>
+          <ul id="history"></ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>Runs on port 5050 • CI/CD + Docker ready</small>
+    </footer>
+  </div>
+
+<script>
+let board = Array(9).fill(null);
+let turn = "X";
+
+function renderBoard(){
+  const container = document.getElementById("board");
+  container.innerHTML = "";
+  for(let i=0;i<9;i++){
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.index = i;
+    cell.textContent = board[i] || "";
+    cell.addEventListener("click", ()=>cellClicked(i));
+    container.appendChild(cell);
+  }
+}
+
+async function cellClicked(i){
+  if(board[i]) return; // taken
+  const playerX = document.getElementById("playerX").value || "Player X";
+  const playerO = document.getElementById("playerO").value || "Player O";
+  const resp = await fetch("/api/move", {
+    method: "POST",
+    headers: {'content-type':'application/json'},
+    body: JSON.stringify({board, index:i, player:turn, player_x:playerX, player_o:playerO})
+  });
+  const j = await resp.json();
+  if(j.error){ alert(j.error); return; }
+  board = j.board;
+  renderBoard();
+  if(j.status === "win"){
+    alert(`${j.winner} wins!`);
+    await refreshStats();
+  } else if(j.status === "draw"){
+    alert("Draw!");
+    await refreshStats();
+  } else {
+    turn = turn === "X" ? "O" : "X";
+  }
+}
+
+document.getElementById("restartBtn").addEventListener("click", async ()=>{
+  const res = await fetch("/api/new", {method:"POST", headers:{'content-type':'application/json'}, body:JSON.stringify({})});
+  const j = await res.json();
+  board = j.board;
+  turn = "X";
+  renderBoard();
+});
+
+async function refreshStats(){
+  const h = await (await fetch("/api/history")).json();
+  const lb = await (await fetch("/api/leaderboard")).json();
+  const historyEl = document.getElementById("history");
+  historyEl.innerHTML = "";
+  h.slice(0,10).forEach(g=>{
+    const li = document.createElement("li");
+    const w = g.winner || "Draw";
+    li.textContent = `${g.timestamp.split("T")[0]} — ${g.player_x || "X"} vs ${g.player_o || "O"} → ${w}`;
+    historyEl.appendChild(li);
+  });
+  const lbEl = document.getElementById("leaderboard");
+  lbEl.innerHTML = "";
+  lb.forEach(r=>{
+    const li = document.createElement("li");
+    li.textContent = `${r.player}: ${r.wins}`;
+    lbEl.appendChild(li);
+  });
+}
+
+(async function init(){
+  const r = await fetch("/api/new", {method:"POST", headers:{'content-type':'application/json'}, body:JSON.stringify({})});
+  const j = await r.json();
+  board = j.board;
+  renderBoard();
+  await refreshStats();
+})();
+</script>
+</body>
+</html>

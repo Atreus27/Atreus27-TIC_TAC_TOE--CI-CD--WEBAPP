@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  tictactoe:
+    build: .
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./tictactoe.db:/app/tictactoe.db
+    environment:
+      - FLASK_ENV=production
