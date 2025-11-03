@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Tests
+.pytest_cache/
+coverage.xml
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+*.img
+
+# Reports
+pytest-report.xml
+
+# Byte-compiled
+*.egg-info/
+dist/
+build/
