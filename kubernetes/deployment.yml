@@ -18,7 +18,7 @@ spec:
         - name: ecr-registry-secret
       containers:
         - name: tictactoe
-          image: 959975882219.dkr.ecr.us-east-1.amazonaws.com/tic_tac_toe:latest
+          image: 959975882219.dkr.ecr.us-east-1.amazonaws.com/tic_tac_toe:953c8b6547e47b927ab362bef22c2cea8d763c18
           imagePullPolicy: Always
           ports:
             - containerPort: 5050
