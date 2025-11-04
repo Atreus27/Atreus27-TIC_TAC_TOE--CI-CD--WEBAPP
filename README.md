@@ -21,21 +21,34 @@ A simple **Tic Tac Toe web app built using Python Flask**, containerized with Do
 
 
 
-Developer Commit (GitHub)
-        │
-        ▼
-GitHub Actions (CI/CD Pipeline)
-  ├── Run Tests & Lint
-  ├── Code Quality Scan (SonarQube)
-  ├── Build & Push Docker Image to ECR
-  ├── Security Scan (Trivy)
-  └── Update Deployment YAML
-        │
-        ▼
-ArgoCD (GitOps)
-        │
-        ▼
-Kubernetes Cluster (EKS)
-  ├── Pods (TicTacToe App)
-  ├── Service (LoadBalancer)
-  └── Namespace (tictactoe)
+                 ┌──────────────────────────┐
+                 │      Developer Push      │
+                 │   (Code → GitHub Main)   │
+                 └────────────┬─────────────┘
+                              │
+                              ▼
+           ┌────────────────────────────────────────┐
+           │        GitHub Actions CI/CD Pipeline    │
+           │------------------------------------------│
+           │  ✅ Tests, Lint, SonarQube, Trivy        │
+           │  ✅ Build & Push Image to ECR            │
+           │  ✅ Update Kubernetes Deployment YAML     │
+           └──────────────────┬───────────────────────┘
+                              │
+                              ▼
+                    ┌────────────────┐
+                    │     ArgoCD     │
+                    │ (GitOps Engine)│
+                    └───────┬────────┘
+                            │
+                            ▼
+               ┌────────────────────────────┐
+               │  Kubernetes Cluster (EKS)  │
+               │----------------------------│
+               │  🐳 Pods: TicTacToe App     │
+               │  ☸️ Service: LoadBalancer   │
+               │  🧠 Namespace: tictactoe    │
+               └────────────┬───────────────┘
+                            │
+                            ▼
+              🌐 AWS ELB → http://<elb-dns>:5050
