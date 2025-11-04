@@ -10,17 +10,6 @@ A simple **Tic Tac Toe web app built using Python Flask**, containerized with Do
 - CI/CD with GitHub Actions
 - Continuous Delivery via ArgoCD
 
-## ⚙️ Run Locally
-```bash
-git clone https://github.com/petta/tic-tac-toe.git
-cd tic-tac-toe
-pip install -r requirements.txt
-python app.py
-
-
-
-
-
 
 
 
